@@ -149,6 +149,28 @@ MongoClient.connect(url, function(err, db)
        }
     });
 
+  app.post('/update', function (req, res) {
+    var body1 = req.body;    
+    
+    console.log(body2);
+    if(!body1.name|| !body1.mobile || !body1.address || !body1.city || !body1.state || !body1.gender){
+        res.send(JSON.stringify({ mess: " parameter missing"}));
+      }   
+      else
+      {
+        var body2 = body1._id;
+        delete body1._id;
+        newquery = { $set: body1 }
+        console.log(new mongodb.ObjectID(body2));
+        dbo.collection('Users').updateOne({ _id: new mongodb.ObjectID(body2)},newquery,function(err,result){
+          if(err) throw err;
+          console.log("document updated");
+          var json5=JSON.stringify(result);
+          console.log(json5);
+      });
+    }
+  });
+
   app.post('/delete', function (req, res) {
     var body2 = req.body;
       // for safety reasons
@@ -165,20 +187,7 @@ MongoClient.connect(url, function(err, db)
        }
     });
 
-  app.post('/update', function (req, res) {
-    var body1 = req.body;    
-    var body2 = body1._id;
-    console.log(body2);
-    delete body1._id;
-    newquery = { $set: body1 }
-    console.log(new mongodb.ObjectID(body2));
-    dbo.collection('Users').updateOne({ _id: new mongodb.ObjectID(body2)},newquery,function(err,result){
-      if(err) throw err;
-      console.log("document updated");
-      var json5=JSON.stringify(result);
-      console.log(json5);
-      });
-  });
+  
 
 
 
