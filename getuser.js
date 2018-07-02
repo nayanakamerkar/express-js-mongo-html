@@ -137,55 +137,73 @@ MongoClient.connect(url, function(err, db)
       // for safety reasons
       console.log("body =", body1);
       if(!body1.name|| !body1.mobile || !body1.address || !body1.city || !body1.state || !body1.gender){
-        res.send(JSON.stringify({ mess: " parameter missing"}));
+        res.status(400).send(JSON.stringify({ mess: " parameter missing"}));
       }   
       else{
         dbo.collection("Users").insertOne(body1,function(err,result){
-          if(err) throw err;
-          console.log(result);
-          var myjson4=JSON.stringify(result.insertedId);
-            res.send(myjson4);
+          if(err)
+          {
+            throw err;
+            res.status(503).send(JSON.stringify({ mess: err}));
+          //console.log("document updated");
+
+          }else{
+             var myjson4=JSON.stringify(result.insertedId);
+             var resp={"id":result.insertedId};
+             res.status(200).send(resp);
+            //res.status(200).send(JSON.stringify(result.insertedId);
+          } 
+         // console.log(result);
+         
         });
        }
     });
 
   app.post('/update', function (req, res) {
-    var body1 = req.body;    
-    
-    console.log(body2);
-    if(!body1.name|| !body1.mobile || !body1.address || !body1.city || !body1.state || !body1.gender){
-        res.send(JSON.stringify({ mess: " parameter missing"}));
-      }   
-      else
-      {
-        var body2 = body1._id;
-        delete body1._id;
-        newquery = { $set: body1 }
-        console.log(new mongodb.ObjectID(body2));
-        dbo.collection('Users').updateOne({ _id: new mongodb.ObjectID(body2)},newquery,function(err,result){
-          if(err) throw err;
-          console.log("document updated");
-          var json5=JSON.stringify(result);
-          console.log(json5);
+  var body1 = req.body;    
+  
+ // console.log(body2);
+  if(!body1.name|| !body1.mobile || !body1.address || !body1.city || !body1.state || !body1.gender){
+      res.status(400).send(JSON.stringify({ mess: " parameter missing"}));
+    }   
+    else
+    {
+      var body2 = body1._id;
+      delete body1._id;
+      newquery = { $set: body1 }
+      console.log(new mongodb.ObjectID(body2));
+      dbo.collection('Users').updateOne({ _id: new mongodb.ObjectID(body2)},newquery,function(err,result){
+        if(err){
+          throw err;
+          res.status(503).send(JSON.stringify({ mess: err}));
+           console.log("document updated");
+
+        }else{
+          res.status(200).send(JSON.stringify({ mess: "updated successfully"}));
+        }
       });
-    }
+     }
   });
 
   app.post('/delete', function (req, res) {
-    var body2 = req.body;
-      // for safety reasons
-      console.log("body =", body2);
-      if(!body2._id){
-        res.send(JSON.stringify({ mess: " parameter missing"}));
-      }   
-      else{
-        console.log("body =", body2._id);
-        dbo.collection("Users").deleteOne({_id: new mongodb.ObjectID(body2._id)},function(err,result){
-          if(err) throw err;
-          console.log("document deleted");
-        });
-       }
+  var body1 = req.body;
+  console.log("body =", body1._id);
+  if(!body1._id){ // 400 - 401
+    res.status(400).send(JSON.stringify({ mess: "parameter missing"}));
+  }
+  else
+  {
+    dbo.collection('Users').deleteOne({_id: new mongodb.ObjectID(body1._id)},function(err,result){
+      console.log("err",err,"result",result);
+      if(err){
+        throw err;
+        res.status(503).send(JSON.stringify({ mess: err}));  
+        console.log("document deleted");
+      }
+      else res.status(200).send(JSON.stringify({ mess: "deleted successfully"}));
     });
+  }
+});
 
   
 

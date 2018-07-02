@@ -1,0 +1,17 @@
+p{
+    font-size: 25 px;
+    color:"aqua";
+}
+table{
+    border:2px solid black;
+}
+th{
+    background-color:#337ab7;
+    text-align:center;
+    border:2px solid black;
+
+}
+td{
+    text-align:center;
+    border:2px solid black;
+}
